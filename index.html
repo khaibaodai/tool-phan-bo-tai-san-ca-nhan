@@ -1,0 +1,475 @@
+Copy
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Công cụ Phân bổ Tài sản Cá nhân</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @media print {
+            body { -webkit-print-color-adjust: exact; }
+        }
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin: 20px 0;
+        }
+        .input-group {
+            margin-bottom: 1rem;
+        }
+        .results-section {
+            margin-top: 2rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 p-4">
+    <div class="max-w-7xl mx-auto">
+        <!-- Header -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <h1 class="text-3xl font-bold text-center text-blue-600 mb-2">
+                <i class="fas fa-chess mr-3"></i>Công cụ Phân bổ Tài sản Cá nhân
+            </h1>
+            <p class="text-gray-600 text-center">Chiến lược đầu tư thông minh theo mô hình quân cờ</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Input Form -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-semibold mb-4 text-gray-800">
+                    <i class="fas fa-edit mr-2"></i>Thông tin tài chính
+                </h2>
+                
+                <div class="input-group">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Thu nhập mỗi tháng (VND)</label>
+                    <input type="number" id="monthlyIncome" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="20000000">
+                </div>
+
+                <div class="input-group">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Chi phí sinh hoạt mỗi tháng (VND)</label>
+                    <input type="number" id="monthlyExpenses" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="15000000">
+                </div>
+
+                <div class="input-group">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Tiết kiệm hiện tại (VND)</label>
+                    <input type="number" id="currentSavings" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="100000000">
+                </div>
+
+                <div class="input-group">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Tài sản hiện hữu</label>
+                    <textarea id="currentAssets" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" rows="3" placeholder="Nhà ở, xe hơi, vàng..."></textarea>
+                </div>
+
+                <div class="input-group">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Mục tiêu tài chính chính</label>
+                    <select id="financialGoal" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="buy_house">Mua nhà</option>
+                        <option value="early_retirement">Nghỉ hưu sớm</option>
+                        <option value="education">Du học cho con</option>
+                        <option value="asset_growth">Tăng trưởng tài sản</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Thời gian đầu tư</label>
+                    <select id="investmentHorizon" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="short">Ngắn hạn (1-2 năm)</option>
+                        <option value="medium">Trung hạn (3-5 năm)</option>
+                        <option value="long">Dài hạn (5-10 năm)</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Khẩu vị rủi ro</label>
+                    <select id="riskAppetite" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="safe">An toàn</option>
+                        <option value="neutral">Trung lập</option>
+                        <option value="aggressive">Mạo hiểm</option>
+                    </select>
+                </div>
+
+                <button onclick="calculateAllocation()" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition duration-200">
+                    <i class="fas fa-calculator mr-2"></i>Tính toán phân bổ
+                </button>
+            </div>
+
+            <!-- Allocation Adjustment -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-semibold mb-4 text-gray-800">
+                    <i class="fas fa-sliders-h mr-2"></i>Điều chỉnh tỷ lệ phân bổ
+                </h2>
+                
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <i class="fas fa-chess-rook text-blue-600 mr-2"></i>
+                            <span class="font-medium">Trọng Binh</span>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="number" id="rookPercent" value="55" min="0" max="100" class="w-16 px-2 py-1 border border-gray-300 rounded mr-2 text-center" onchange="updateAllocation()">
+                            <span>%</span>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <i class="fas fa-chess-knight text-green-600 mr-2"></i>
+                            <span class="font-medium">Tiên Phong</span>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="number" id="knightPercent" value="30" min="0" max="100" class="w-16 px-2 py-1 border border-gray-300 rounded mr-2 text-center" onchange="updateAllocation()">
+                            <span>%</span>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <i class="fas fa-chess-bishop text-purple-600 mr-2"></i>
+                            <span class="font-medium">Kỵ Binh</span>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="number" id="bishopPercent" value="10" min="0" max="100" class="w-16 px-2 py-1 border border-gray-300 rounded mr-2 text-center" onchange="updateAllocation()">
+                            <span>%</span>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <i class="fas fa-chess-pawn text-orange-600 mr-2"></i>
+                            <span class="font-medium">Trung Quân</span>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="number" id="pawnPercent" value="5" min="0" max="100" class="w-16 px-2 py-1 border border-gray-300 rounded mr-2 text-center" onchange="updateAllocation()">
+                            <span>%</span>
+                        </div>
+                    </div>
+
+                    <div class="border-t pt-4">
+                        <div class="flex justify-between items-center font-semibold">
+                            <span>Tổng cộng:</span>
+                            <span id="totalPercent" class="text-lg">100%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Số năm dự báo tăng trưởng</label>
+                    <input type="number" id="projectionYears" value="5" min="1" max="20" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" onchange="updateProjection()">
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div class="results-section grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Allocation Table -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-semibold mb-4 text-gray-800">
+                    <i class="fas fa-table mr-2"></i>Bảng phân bổ vốn
+                </h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full border-collapse border border-gray-300">
+                        <thead>
+                            <tr class="bg-gray-50">
+                                <th class="border border-gray-300 px-4 py-2 text-left">Nhóm đầu tư</th>
+                                <th class="border border-gray-300 px-4 py-2 text-right">Số tiền (VND)</th>
+                                <th class="border border-gray-300 px-4 py-2 text-left">Kênh đầu tư</th>
+                            </tr>
+                        </thead>
+                        <tbody id="allocationTable">
+                            <!-- Will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Pie Chart -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-semibold mb-4 text-gray-800">
+                    <i class="fas fa-chart-pie mr-2"></i>Biểu đồ phân bổ
+                </h2>
+                <div class="chart-container">
+                    <canvas id="pieChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Growth Chart -->
+        <div class="results-section">
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-semibold mb-4 text-gray-800">
+                    <i class="fas fa-chart-line mr-2"></i>Dự báo tăng trưởng tài sản
+                </h2>
+                <div class="chart-container">
+                    <canvas id="growthChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recommendations -->
+        <div class="results-section">
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-semibold mb-4 text-gray-800">
+                    <i class="fas fa-lightbulb mr-2"></i>Đề xuất & Kiến nghị
+                </h2>
+                <div id="recommendations" class="text-gray-700 leading-relaxed">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let pieChart, growthChart;
+        
+        const investmentChannels = {
+            'Trọng Binh': 'Cổ phiếu Bluechip, BĐS ổn định, Trái phiếu doanh nghiệp',
+            'Tiên Phong': 'Mid-cap, ETF theo xu hướng, BĐS vùng ven',
+            'Kỵ Binh': 'Startup, BĐS nghỉ dưỡng, Cổ phiếu tăng trưởng mạnh',
+            'Trung Quân': 'Tiền mặt, Gửi ngân hàng, Quỹ trái phiếu ngắn hạn'
+        };
+
+        const expectedReturns = {
+            'Trọng Binh': 0.18,
+            'Tiên Phong': 0.25,
+            'Kỵ Binh': 0.40,
+            'Trung Quân': 0.05
+        };
+
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('vi-VN', {
+                style: 'currency',
+                currency: 'VND'
+            }).format(amount);
+        }
+
+        function updateAllocation() {
+            const rookie = parseInt(document.getElementById('rookPercent').value) || 0;
+            const knight = parseInt(document.getElementById('knightPercent').value) || 0;
+            const bishop = parseInt(document.getElementById('bishopPercent').value) || 0;
+            const pawn = parseInt(document.getElementById('pawnPercent').value) || 0;
+            
+            const total = rookie + knight + bishop + pawn;
+            document.getElementById('totalPercent').textContent = total + '%';
+            
+            if (total === 100) {
+                document.getElementById('totalPercent').className = 'text-lg text-green-600';
+            } else {
+                document.getElementById('totalPercent').className = 'text-lg text-red-600';
+            }
+            
+            calculateAllocation();
+        }
+
+        function calculateAllocation() {
+            const monthlyIncome = parseFloat(document.getElementById('monthlyIncome').value) || 0;
+            const monthlyExpenses = parseFloat(document.getElementById('monthlyExpenses').value) || 0;
+            const currentSavings = parseFloat(document.getElementById('currentSavings').value) || 0;
+            
+            const monthlySurplus = monthlyIncome - monthlyExpenses;
+            const totalCapital = currentSavings + (monthlySurplus * 12); // Assume 1 year surplus
+            
+            const rookPercent = parseInt(document.getElementById('rookPercent').value) || 0;
+            const knightPercent = parseInt(document.getElementById('knightPercent').value) || 0;
+            const bishopPercent = parseInt(document.getElementById('bishopPercent').value) || 0;
+            const pawnPercent = parseInt(document.getElementById('pawnPercent').value) || 0;
+            
+            const allocations = {
+                'Trọng Binh': (totalCapital * rookPercent) / 100,
+                'Tiên Phong': (totalCapital * knightPercent) / 100,
+                'Kỵ Binh': (totalCapital * bishopPercent) / 100,
+                'Trung Quân': (totalCapital * pawnPercent) / 100
+            };
+            
+            updateTable(allocations);
+            updatePieChart(allocations);
+            updateGrowthChart(allocations);
+            updateRecommendations();
+        }
+
+        function updateTable(allocations) {
+            const tableBody = document.getElementById('allocationTable');
+            tableBody.innerHTML = '';
+            
+            const icons = {
+                'Trọng Binh': 'fas fa-chess-rook text-blue-600',
+                'Tiên Phong': 'fas fa-chess-knight text-green-600',
+                'Kỵ Binh': 'fas fa-chess-bishop text-purple-600',
+                'Trung Quân': 'fas fa-chess-pawn text-orange-600'
+            };
+            
+            Object.entries(allocations).forEach(([type, amount]) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="border border-gray-300 px-4 py-2">
+                        <i class="${icons[type]} mr-2"></i>${type}
+                    </td>
+                    <td class="border border-gray-300 px-4 py-2 text-right font-medium">
+                        ${formatCurrency(amount)}
+                    </td>
+                    <td class="border border-gray-300 px-4 py-2 text-sm">
+                        ${investmentChannels[type]}
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        function updatePieChart(allocations) {
+            const ctx = document.getElementById('pieChart').getContext('2d');
+            
+            if (pieChart) {
+                pieChart.destroy();
+            }
+            
+            pieChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: Object.keys(allocations),
+                    datasets: [{
+                        data: Object.values(allocations),
+                        backgroundColor: [
+                            '#3B82F6', // Blue for Trọng Binh
+                            '#10B981', // Green for Tiên Phong
+                            '#8B5CF6', // Purple for Kỵ Binh
+                            '#F59E0B'  // Orange for Trung Quân
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateGrowthChart(allocations) {
+            const ctx = document.getElementById('growthChart').getContext('2d');
+            const years = parseInt(document.getElementById('projectionYears').value) || 5;
+            
+            if (growthChart) {
+                growthChart.destroy();
+            }
+            
+            const labels = [];
+            const datasets = [];
+            
+            for (let i = 0; i <= years; i++) {
+                labels.push(`Năm ${i}`);
+            }
+            
+            const colors = {
+                'Trọng Binh': '#3B82F6',
+                'Tiên Phong': '#10B981',
+                'Kỵ Binh': '#8B5CF6',
+                'Trung Quân': '#F59E0B'
+            };
+            
+            Object.entries(allocations).forEach(([type, initialAmount]) => {
+                const data = [];
+                for (let i = 0; i <= years; i++) {
+                    const growthAmount = initialAmount * Math.pow(1 + expectedReturns[type], i);
+                    data.push(growthAmount);
+                }
+                
+                datasets.push({
+                    label: type,
+                    data: data,
+                    borderColor: colors[type],
+                    backgroundColor: colors[type] + '20',
+                    fill: false,
+                    tension: 0.1
+                });
+            });
+            
+            growthChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return formatCurrency(value);
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateProjection() {
+            calculateAllocation();
+        }
+
+        function updateRecommendations() {
+            const riskAppetite = document.getElementById('riskAppetite').value;
+            const financialGoal = document.getElementById('financialGoal').value;
+            const investmentHorizon = document.getElementById('investmentHorizon').value;
+            
+            const recommendationsDiv = document.getElementById('recommendations');
+            
+            let recommendations = '';
+            
+            // Base recommendations based on risk appetite
+            if (riskAppetite === 'safe') {
+                recommendations += '<p class="mb-3"><strong>Với khẩu vị rủi ro an toàn:</strong> Bạn nên tập trung vào nhóm Trọng Binh và Trung Quân để đảm bảo vốn được bảo toàn. Hạn chế đầu tư vào Kỵ Binh và cân nhắc giảm tỷ trọng Tiên Phong.</p>';
+            } else if (riskAppetite === 'neutral') {
+                recommendations += '<p class="mb-3"><strong>Với khẩu vị rủi ro trung lập:</strong> Tỷ lệ phân bổ mặc định phù hợp với bạn. Giữ cân bằng giữa Trọng Binh để ổn định và Tiên Phong để tăng trưởng.</p>';
+            } else {
+                recommendations += '<p class="mb-3"><strong>Với khẩu vị rủi ro mạo hiểm:</strong> Bạn có thể tăng tỷ trọng Kỵ Binh và Tiên Phong để đạt được lợi nhuận cao hơn, nhưng cần chuẩn bị tâm lý cho biến động mạnh.</p>';
+            }
+            
+            // Recommendations based on financial goal
+            if (financialGoal === 'buy_house') {
+                recommendations += '<p class="mb-3"><strong>Mục tiêu mua nhà:</strong> Nên tập trung vào các kênh có tính thanh khoản cao như Trọng Binh và Tiên Phong. Tránh đầu tư quá nhiều vào Kỵ Binh vì khó rút vốn khi cần.</p>';
+            } else if (financialGoal === 'early_retirement') {
+                recommendations += '<p class="mb-3"><strong>Mục tiêu nghỉ hưu sớm:</strong> Cần tạo dòng tiền thụ động ổn định. Tăng tỷ trọng Trọng Binh với các kênh tạo dòng tiền như cho thuê bất động sản, cổ tức cổ phiếu.</p>';
+            } else if (financialGoal === 'education') {
+                recommendations += '<p class="mb-3"><strong>Mục tiêu du học cho con:</strong> Cần tính toán thời gian cụ thể và đảm bảo vốn sẵn sàng khi cần. Tập trung vào Trọng Binh và Tiên Phong với tính thanh khoản cao.</p>';
+            } else {
+                recommendations += '<p class="mb-3"><strong>Mục tiêu tăng trưởng tài sản:</strong> Có thể chấp nhận rủi ro cao hơn để đạt được lợi nhuận tối đa. Cân nhắc tăng tỷ trọng Kỵ Binh và Tiên Phong.</p>';
+            }
+            
+            // Recommendations based on investment horizon
+            if (investmentHorizon === 'short') {
+                recommendations += '<p class="mb-3"><strong>Với thời gian đầu tư ngắn hạn:</strong> Nên tập trung vào Trung Quân và Trọng Binh với tính thanh khoản cao. Hạn chế Kỵ Binh vì cần thời gian dài mới phát huy hiệu quả.</p>';
+            } else if (investmentHorizon === 'medium') {
+                recommendations += '<p class="mb-3"><strong>Với thời gian đầu tư trung hạn:</strong> Tỷ lệ phân bổ hiện tại phù hợp. Có thể linh hoạt điều chỉnh theo diễn biến thị trường.</p>';
+            } else {
+                recommendations += '<p class="mb-3"><strong>Với thời gian đầu tư dài hạn:</strong> Đây là thời gian tối ưu để tăng tỷ trọng Kỵ Binh và tận dụng sức mạnh của lãi kép. Có thể chấp nhận biến động ngắn hạn để đạt lợi nhuận cao.</p>';
+            }
+            
+            recommendations += '<div class="mt-4 p-4 bg-blue-50 rounded-lg"><strong>Lưu ý quan trọng:</strong> Đây chỉ là những gợi ý chung. Bạn nên tham khảo ý kiến của chuyên gia tài chính trước khi đưa ra quyết định đầu tư cuối cùng.</div>';
+            
+            recommendationsDiv.innerHTML = recommendations;
+        }
+
+        // Initialize with default values
+        window.onload = function() {
+            document.getElementById('monthlyIncome').value = 20000000;
+            document.getElementById('monthlyExpenses').value = 15000000;
+            document.getElementById('currentSavings').value = 100000000;
+            calculateAllocation();
+        };
+    </script>
+</body>
+</html>
